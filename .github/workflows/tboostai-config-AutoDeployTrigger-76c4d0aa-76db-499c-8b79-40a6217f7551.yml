@@ -1,0 +1,48 @@
+name: Trigger auto deployment for tboostai-config
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/tboostai-config-AutoDeployTrigger-76c4d0aa-76db-499c-8b79-40a6217f7551.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.TBOOSTAICONFIG_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.TBOOSTAICONFIG_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.TBOOSTAICONFIG_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          _dockerfilePathKey_: _dockerfilePath_
+          registryUrl: 
+          registryUsername: ${{ secrets.TBOOSTAICONFIG_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.TBOOSTAICONFIG_REGISTRY_PASSWORD }}
+          containerAppName: tboostai-config
+          resourceGroup: tboostai-springcloud-prod
+          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
+
+
