@@ -1,0 +1,26 @@
+# 忽略 Git 仓库信息
+.git
+.gitignore
+
+# IntelliJ IDEA 项目配置文件
+.idea/
+*.iml
+
+# 忽略日志和临时文件
+*.log
+*.tmp
+
+# 忽略 node_modules（如果有前端子项目）
+node_modules/
+
+# 忽略 Maven/Gradle 缓存目录
+.mvn/
+.gradle/
+build/
+
+# 忽略所有 target 目录，除了 .jar 文件
+target/*
+!target/*.jar
+
+# 忽略 Markdown 文档
+*.md
