@@ -32,14 +32,15 @@ jobs:
           tenant-id: ${{ secrets.TBOOSTAICONFIG_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.TBOOSTAICONFIG_AZURE_SUBSCRIPTION_ID }}
 
+      - name: Login to ACR using Azure CLI
+        run: az acr login --name tboostaiconfig
+
       - name: Build and push Docker image to ACR and deploy
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}
           dockerfilePath: Dockerfile
           registryUrl: tboostaiconfig.azurecr.io
-          registryUsername: ${{ secrets.TBOOSTAICONFIG_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.TBOOSTAICONFIG_REGISTRY_PASSWORD }}
           containerAppName: tboostai-config
           resourceGroup: tboostai-springcloud-prod
           imageToBuild: tboostaiconfig.azurecr.io/tboostai-config:${{ github.sha }}
